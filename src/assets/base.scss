@@ -1,0 +1,32 @@
+
+
+.table {
+  width: 94%;
+
+  .ivu-table-cell-tree {
+    margin-right: 4px;
+  }
+
+  .ivu-table-cell-slot {
+    display: inline;
+
+    .ivu-input-wrapper {
+      width: auto;
+    }
+  }
+
+  .operation {
+
+    button:not(last-child) {
+      margin-right: 14px;
+    }
+  }
+}
+
+.table>:first-child {
+  width: 100%;
+}
+
+.form {
+  margin-top: 20px;
+}

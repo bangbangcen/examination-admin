@@ -1,0 +1,21 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "include": ["component-import-helper.d.ts", "env.d.ts", "src/**/*", "src/**/*.vue"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "preserveValueImports": false,
+    "ignoreDeprecations": "5.0",
+    "allowImportingTsExtensions": true,
+    "suppressImplicitAnyIndexErrors":true,
+    "noEmit": true
+  },
+
+  "references": [
+    {
+      "path": "./tsconfig.config.json"
+    }
+  ],
+}
