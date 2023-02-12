@@ -36,12 +36,16 @@ const columns = [
     }
   },
   {
-    title: "体检类型",
+    title: "公司名称",
     key: "type",
     render: (h:any, params:any) => {
       switch (params.row.type){
-        case 0:return '团检';break;
-        case 1:return '个检';break;
+        case 0:
+          return params.row.company_name;
+          break;
+        case 1:
+          return '个检';
+          break;
       }
     },
     filters: [
@@ -54,7 +58,8 @@ const columns = [
           value: '1'
       }
     ],
-    filterMethod (value:any, row:any) {return row.type==value;}
+    filterMethod (value:any, row:any) {return row.type==value;},
+    
   },
   {
     title: "当前状态",
