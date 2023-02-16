@@ -6,6 +6,7 @@ import { ICON_TYPES } from '../../../constants';
 const props = defineProps(["node"]);
 const { node } = props;
 function jump(node: any) {
+  console.log(store);
   router.push(node.path);
   if (!store.visitedViews.includes(node)) {
     store.visitedViews.push(node);

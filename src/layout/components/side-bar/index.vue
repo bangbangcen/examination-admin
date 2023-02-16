@@ -5,8 +5,9 @@ const { pmsTree } = store;
 watch(() => store.sideBarIsOpen, (curVal, preVal) => {
   if (curVal === true) {
     (document.querySelector(".side-bar") as HTMLElement).style.width = "240px";
-    (document.querySelector(".side-bar .ivu-menu") as HTMLElement).style.width = "240px";
+    (document.querySelectorAll(".ivu-menu")).forEach((el: any) => { el.style.width = "240px"; });
     document.querySelectorAll(".side-bar .ivu-menu-submenu").forEach((el: any) => { el.style.width = "240px"; });
+    document.querySelectorAll(".ivu-menu-item").forEach((el: any) => { el.style.width = "240px"; });
     document.querySelectorAll(".side-bar .ivu-menu-submenu-title-icon").forEach((el: any) => { el.style.display = "block"; });
     setTimeout(() => {
       document.querySelectorAll(".side-bar span").forEach((el: any) => { el.style.display = "inline"; });
@@ -17,7 +18,8 @@ watch(() => store.sideBarIsOpen, (curVal, preVal) => {
     document.querySelectorAll(".side-bar span").forEach((el: any) => { el.style.display = "none"; });
     (document.querySelector(".title") as HTMLElement).style.display = "none";
     (document.querySelector(".side-bar") as HTMLElement).style.width = "60px";
-    (document.querySelector(".side-bar .ivu-menu") as HTMLElement).style.width = "60px";
+    (document.querySelectorAll(".ivu-menu")).forEach((el: any) => { el.style.width = "60px"; });
+    document.querySelectorAll(".ivu-menu-item").forEach((el: any) => { el.style.width = "60px"; });
     document.querySelectorAll(".side-bar .ivu-menu-submenu").forEach((el: any) => { el.style.width = "60px"; });
     document.querySelectorAll(".side-bar .ivu-menu-submenu-title-icon").forEach((el: any) => { el.style.display = "none"; });
   }
@@ -43,11 +45,9 @@ watch(() => store.sideBarIsOpen, (curVal, preVal) => {
   
   .menu {
     height: 100%;
-    
-
   }
 }
-:deep(.ivu-menu, .side-bar span) {
+:deep(.ivu-menu, .side-bar span, .ivu-menu-item span, .ivu-menu-item) {
   transition: all 0.2s ease-out;
 }
 </style>

@@ -92,4 +92,8 @@ function deleteRole() {}
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.table-top {
+  margin-bottom: 20px;
+}
+</style>

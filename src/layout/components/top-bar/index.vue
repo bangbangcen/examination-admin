@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { store } from '@/store';
+import { collapseMenuBar } from '../../../store/mutations';
 
 function changeSideBarStatus() {
   store.sideBarIsOpen = !store.sideBarIsOpen;

@@ -13,5 +13,5 @@ const srcStore = {
   curView: "",
   visitedViews: [],
   sideBarIsOpen: true
-}
+};
 export const store: Store = reactive(srcStore);

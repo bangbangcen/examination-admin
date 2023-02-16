@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import router from '@/router';
+import router from '../../../router/index';
 import { store } from '@/store';
 import { cloneDeep } from 'lodash';
 import { watchEffect } from 'vue';
@@ -13,8 +13,9 @@ function closeTag(index: number, isSelected: boolean) {
   console.log(cloneDeep(tags), isSelected)
   if (isSelected) {
     const lastTag = tags.length ? tags[tags.length - 1].path : '/examination';
-    console.log(lastTag)
-    router.push(lastTag);
+    setTimeout(() => {
+      router.push(lastTag);
+    });
   }
 }
 </script>
