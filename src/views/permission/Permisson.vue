@@ -1,80 +1,78 @@
 <script setup lang="ts">
 import $axios from "@/axios";
-import { ref, reactive } from "vue";
-import { Permission } from "@/model";
+import MyTable from '@/components/MyTable/MyTable.vue';
+import { ref, toRaw, reactive, watch } from "vue";
+import { cloneDeep } from "lodash";
+import { traverse } from "@/utils";
+import { proxy } from "@/main";
 
 const columns = [
   {
     title: "权限名称",
     key: "name",
-    slot: "name",
-    tree: true,
+    flex: 2,
+    editable: true
   },
   {
     title: "路由名称",
-    key: "routeName",
-    slot: "routeName",
+    key: "path",
+    flex: 2
   },
   {
     title: "权限等级",
     key: "level",
-  },
-  {
-    title: "操作",
-    slot: "operation",
+    flex: 2
   },
 ];
+let state = reactive({
+  data: []
+});
 let res = await $axios.get("permission/list");
-let data = res.data.children;
-let childParentMap = new Map();
-let idPermissionMap = new Map();
+state.data = reactive(res.data.children);
 let isEdit = ref(false);
-let dataClone: any = null;
+const table = ref();
+console.log(table);
 
-function collectMap(root: any) {
-  idPermissionMap.set(root.id, root);
-  if (root.children) {
-    root.children.forEach((node: Permission) => {
-      childParentMap.set(node.id, root);
-      idPermissionMap.set(node.id, node);
-      collectMap(node);
-    });
-  }
-}
+watch(
+  isEdit,
+  (newValue) => {
+    if (!newValue) {
+      state.data = reactive(res.data.children);
+    } else {
+      state.data = reactive(cloneDeep(res.data.children));
+    }
+  },
+);
 
 function edit() {
-  dataClone = reactive(res.data);
-  collectMap(dataClone);
-  data = dataClone.children;
   isEdit.value = true;
 }
 
 function cancelEdit() {
-  dataClone = null;
-  data = res.data.children;
   isEdit.value = false;
 }
 
 function save() {
-  $axios.post("permission/update", dataClone.children);
-}
-
-function del(row: Permission, index: number) {
-  let parent = childParentMap.get(row.id);
-  console.log(parent);
-  parent._showChildren = true;
-  parent.children.splice(index, 1);
-}
-
-function add(_row: Permission) {
-  let row = idPermissionMap.get(_row.id);
-  if (row.id !== 0) {
-    row._showChildren = true;
-    if (!row.children) row.children = [];
-    row.children.push(new Permission(row));
-  } else {
-    row.children.push(new Permission(row));
-  }
+  let updatedData = toRaw(state.data);
+  let pmslist: any = [];
+  traverse(updatedData, (node: any) => {
+    delete node.arr;
+    pmslist.push(node);
+  })
+  $axios.post("permission/update", toRaw(pmslist))
+    .then(async (res) => {
+      proxy.$Message.success({ content: res.data.message });
+      isEdit.value = false;
+      res = await $axios.get("permission/list");
+      state.data = reactive(res.data.children);
+      setTimeout(() => {
+        table.value.setProps();
+        table.value.setTableRowStyle();
+      })
+    })
+    .catch((res) => {
+      proxy.$Message.error({ content: res });
+    });
 }
 </script>
 
@@ -89,27 +87,17 @@ function add(_row: Permission) {
         <Icon type="md-return-left" size="20" />
         <span>退出编辑</span>
       </Button>
-      <Button
-        v-if="isEdit"
-        class="button"
-        type="primary"
-        @click="add(dataClone)"
-      >
-        <Icon type="md-add" size="18" />
-        <span>添加权限</span>
-      </Button>
       <Button v-if="isEdit" class="button" type="success" @click="save()">
         <span>保存修改</span>
       </Button>
     </div>
-    <Table
-      v-columnWidth="[3, 3, 1, 1]"
+    <MyTable
       class="table"
-      stripe
-      draggable
-      row-key="id"
       :columns="columns"
-      :data="data"
+      :data="state.data"
+      :fit="true"
+      :edit="isEdit"
+      ref="table"
     >
       <template #name="{ row, index }">
         <span v-if="!isEdit" draggable="true">{{ row.name }}</span>
@@ -119,17 +107,7 @@ function add(_row: Permission) {
         <span v-if="!isEdit">{{ row.routeName }}</span>
         <Input v-if="isEdit" v-model="row.routeName"></Input>
       </template>
-      <template #operation="{ row, index }">
-        <div class="operation">
-          <Button type="primary" :disabled="!isEdit" @click="add(row)">
-            <Icon type="md-add" size="18" />
-          </Button>
-          <Button type="error" :disabled="!isEdit" @click="del(row, index)">
-            <Icon type="md-trash" size="18" />
-          </Button>
-        </div>
-      </template>
-    </Table>
+    </MyTable>
   </div>
 </template>
 

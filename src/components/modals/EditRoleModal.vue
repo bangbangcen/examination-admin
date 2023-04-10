@@ -7,6 +7,7 @@ import { cloneDeep, last } from "lodash";
 
 let props = defineProps<{
   role: Role;
+  isOpen: Boolean;
 }>();
 let lastSelectedIds: Array<number> = [];
 type State = {
@@ -14,18 +15,20 @@ type State = {
   selectedIds: Array<number>;
   pmsList: Array<PmsNode>;
   role: Role;
+  isOpen: Boolean;
 };
 let srcState: State = {
   lastSelectedIds: [],
   selectedIds: [],
   pmsList: [],
   role: cloneDeep(props.role),
+  isOpen: props.isOpen,
 };
 let state = reactive(srcState);
 let idPmsMap = {};
 await getPmsTree();
-collectMap(state.pmsList[0]);
-console.log(idPmsMap)
+// collectMap(state.pmsList[0]);
+// console.log(idPmsMap)
 
 function collectMap(root: PmsNode) {
   idPmsMap[root.id] = root;
@@ -79,81 +82,44 @@ function validatePms(rule: any, value: any, callback: Function) {
   }
 }
 
-function cancelDescendants(root: PmsNode) {
-  root.checked = false;
-  if (root.children) {
-    root.children.forEach((child: PmsNode) => {
-      cancelDescendants(child);
-    });
-  }
-}
-
-function selectDescendants(root: PmsNode) {
-  root.checked = true;
-  if (root.children) {
-    root.children.forEach((child: PmsNode) => {
-      selectDescendants(child);
-    });
-  }
-}
-
-function onSelectPms() {
-  console.log(cloneDeep(state.selectedIds), cloneDeep(lastSelectedIds));
-  const deletedPms = state.lastSelectedIds
-    .filter((id) => !state.selectedIds.includes(id))
-    .map((id) => idPmsMap[id]);
-  const addedPms = state.selectedIds
-    .filter((id) => !lastSelectedIds.includes(id))
-    .map((id) => idPmsMap[id]);
-  // console.log(deletedPms, addedPms)
-  deletedPms.forEach((pms) => {
-    // const parent = pms.parent;
-    // if (parent) {
-    //   if (parent.children.every((pms: PmsNode) => !pms.checked)) {
-    //     parent.checked = false;
-    //   }
-    // }
-    cancelDescendants(pms);
-  });
-  addedPms.forEach((pms) => {
-    selectDescendants(pms);
-  });
-  lastSelectedIds = cloneDeep(state.selectedIds);
+function onSelectPms(pms: any) {
+  console.log(pms);
 }
 
 const validateRules = {
   name: [{ required: true, validator: validateName, trigger: "blur" }],
   pms: [{ required: true, validator: validatePms, trigger: "change" }],
 };
+
+function submit() {
+  console.log(state.lastSelectedIds);
+}
 </script>
 
 <template>
-  <Form
-    class="form"
-    :model="state.role"
-    :label-width="80"
-    :rules="validateRules"
-  >
-    <FormItem label="角色名称" prop="name">
-      <Input v-model="state.role.name" placeholder="请输入角色名称"></Input>
-    </FormItem>
-    <FormItem label="备注">
-      <Input
-        v-model="state.role.description"
-        type="textarea"
-        placeholder="请输入角色备注"
-      ></Input>
-    </FormItem>
-    <FormItem label="角色权限" prop="pms">
-      <TreeSelect
-        v-model="state.selectedIds"
-        multiple
-        show-checkbox
-        :data="state.pmsList"
-        :on-change="onSelectPms()"
-      />
-    </FormItem>
-  </Form>
+  {{ isOpen }}
+  <Modal v-model="state.isOpen" title="编辑角色" on-ok="submit()">
+    <Form class="form" :model="state.role" :label-width="80" :rules="validateRules">
+      <FormItem label="角色名称" prop="name">
+        <Input v-model="state.role.name" placeholder="请输入角色名称"></Input>
+      </FormItem>
+      <FormItem label="备注">
+        <Input
+          v-model="state.role.description"
+          type="textarea"
+          placeholder="请输入角色备注"
+        ></Input>
+      </FormItem>
+      <FormItem label="角色权限" prop="pms">
+        <TreeSelect
+          v-model="state.selectedIds"
+          multiple
+          show-checkbox
+          :data="state.pmsList"
+        />
+      </FormItem>
+    </Form>
+  </Modal>
 </template>
 
 <style scoped></style>

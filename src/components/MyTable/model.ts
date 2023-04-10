@@ -1,6 +1,6 @@
 type Column = {
   title: string;
-  key: string;
+  key?: string;
   slot?: string;
   flex?: number;
   editable?: boolean;

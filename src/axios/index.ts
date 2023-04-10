@@ -16,10 +16,14 @@ $axios.interceptors.request.use((req: InternalAxiosRequestConfig<any>): any => {
   return req;
 });
 
-$axios.interceptors.response.use((res: AxiosResponse<any>): any => {
+$axios.interceptors.response.use((res: any): any => {
   return res;
 }, (err: any) => {
-  const { response: { status, data: { message }} } = err;
+  console.log(err)
+  if (!err.response) {
+    return;
+  }
+  const { response: { status = "?", data: { message }} } = err;
   if (status === 401) {
     proxy.$Modal.error({ content: message, title: "认证失败", onOk: () => { router.push('/login'); } });
   }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import type { Column, Row } from "./model";
 
 const props = defineProps<{
@@ -8,7 +9,7 @@ const props = defineProps<{
   level?: number;
   slotColumns?: Array<Column>;
 }>();
-const { columns, edit, level = 0, slotColumns } = props;
+const { columns, level = 0, slotColumns } = props;
 
 function clickArrow(expand: boolean) {
   props.row.expand = expand;
@@ -32,12 +33,13 @@ function clickArrow(expand: boolean) {
           type="ios-arrow-forward"
           @click="clickArrow(true)"
         />
+        
       </template>
       <template v-if="column.slot">
         <slot :name="column.slot" v-bind="{ row, index }"></slot>
       </template>
       <template v-else>
-        <template v-if="!edit || !column.editable">
+        <template v-if="!props.edit || !column.editable">
           {{ props.row[column.key] }}
         </template>
         <template v-else>
@@ -52,7 +54,7 @@ function clickArrow(expand: boolean) {
         class="table-row"
         :columns="columns"
         :row="_row"
-        :edit="edit"
+        :edit="props.edit"
         :level="level + 1"
         :slotColumns="slotColumns"
       >
@@ -99,5 +101,9 @@ tr {
 
 .icon:hover {
   cursor: pointer;
+}
+
+.input {
+  width: 80%;
 }
 </style>

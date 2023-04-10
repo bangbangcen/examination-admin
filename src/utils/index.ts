@@ -21,28 +21,30 @@ export function traverse(node: any, callback: Function) {
     });
   }
   else {
-    dfs(node);
+    node.forEach((_node: any) => {
+      dfs(_node);
+    })
   }
 }
 
 export function flatTree(arr: any) {
   let result: any = [];
-  function dfs(node: any, level: number) {
-    node.level = level;
+  function dfs(node: any) {
     result.push(node);
     if (node.children) {
       node.children.forEach((_node: any) => {
         _node.arr = node.children;
-        dfs(_node, level + 1);
+        dfs(_node);
       });
     }
   }
   if (arr) {
     arr.forEach((_node: any) => {
-      dfs(_node, 0);
+      dfs(_node);
       _node.arr = arr;
     });
   }
+  console.log(arr)
   return result;
 }
 

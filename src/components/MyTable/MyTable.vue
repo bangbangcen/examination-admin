@@ -1,28 +1,54 @@
 <script setup lang="ts">
-import { onMounted, reactive, computed } from "vue";
-import { allEl, elChildren, traverse, flatTree, swap } from "../../utils/index.ts";
+import { onMounted, reactive, computed, watch, ref } from "vue";
+import { cloneDeep } from "lodash";
+import {
+  allEl,
+  elChildren,
+  traverse,
+  flatTree,
+  swap,
+} from "../../utils/index.ts";
 import type { Column, Row } from "./model";
 import MyTableRow from "@/components/MyTable/MyTableRow.vue";
 
 const props = defineProps<{
   columns: Array<Column>;
   data: Array<Row>;
-  fit: boolean;
-  edit: boolean;
-  orderBy: string;
+  fit?: boolean;
+  edit?: boolean;
+  orderBy?: string;
 }>();
-const { columns, fit, edit, orderBy } = props;
-const data = reactive(props.data || []);
+const { columns, fit = true, orderBy } = props;
+let data = props.data;
 let tableRowDoms: any = null;
 const slotColumns = computed(() => {
   return props.columns.filter((col) => col.slot);
 });
-// 遍历树，赋一些涉及展开的属性
-traverse(data, (row: any) => {
-  row.expand = false;
-  row.hasChild = Boolean(row.children && row.children.length);
-});
 
+function setProps() {
+  traverse(data, (row: any) => {
+    row.expand = false;
+    row.hasChild = Boolean(row.children && row.children.length);
+  });
+}
+watch(
+  () => props.edit,
+  (newValue) => {
+    // 遍历树，赋一些涉及展开的属性
+    setProps();
+  },
+  {
+    immediate: true,
+  }
+);
+
+watch(
+  () => props.data,
+  () => {
+    data = props.data;
+    setProps();
+  }
+);
 onMounted(() => {
   tableRowDoms = allEl(".table-row");
   setTableHeadStyle();
@@ -45,6 +71,7 @@ function setTableHeadStyle() {
 
 // 设置每列的flex以及缩进,将node挂载到对应dom上
 function setTableRowStyle() {
+  tableRowDoms = allEl(".table-row");
   const nodeList = flatTree(data); //将树摊平成数组的同时，将node所在的数组以及node层级挂载到node
   tableRowDoms.forEach((row: any, index: number) => {
     const rowItems = [...row.children];
@@ -77,7 +104,11 @@ function setDragProp(dom: any) {
   dom.addEventListener("dragenter", (event: any) => {
     curDraggedDom = event.target;
     curDraggedNode = curDraggedDom.node;
-    if (!curDraggedNode || preDraggedDom === curDraggedDom || !curArr.includes(preDraggedNode))
+    if (
+      !curDraggedNode ||
+      preDraggedDom === curDraggedDom ||
+      !curArr.includes(preDraggedNode)
+    )
       return;
     swapTwoRows();
     setTimeout(() => {
@@ -85,19 +116,21 @@ function setDragProp(dom: any) {
       setTableRowStyle();
       setTableRowDragProp();
     });
-    preDraggedDom = event.target;
-    preDraggedNode = preDraggedDom.node;
   });
 }
 
 function swapTwoRows() {
-    const preIndex = curArr.indexOf(preDraggedNode);
-    const curIndex = curArr.indexOf(curDraggedNode);
-    swap(preDraggedNode, curDraggedNode, orderBy);
-    curArr[preIndex] = curDraggedNode;
-    curArr[curIndex] = preDraggedNode;
+  const preIndex = curArr.indexOf(preDraggedNode);
+  const curIndex = curArr.indexOf(curDraggedNode);
+  swap(preDraggedNode, curDraggedNode, orderBy);
+  curArr[preIndex] = curDraggedNode;
+  curArr[curIndex] = preDraggedNode;
 }
 
+defineExpose({
+  setTableRowStyle,
+  setProps
+});
 </script>
 
 <template>
@@ -112,10 +145,10 @@ function swapTwoRows() {
     <tbody>
       <MyTableRow
         class="table-row"
-        v-for="(row, index) in data"
+        v-for="(row, index) in props.data"
         :columns="columns"
         :row="row"
-        :edit="edit"
+        :edit="props.edit"
         :level="0"
         :slotColumns="slotColumns"
       >

@@ -3,6 +3,10 @@
 .table {
   width: 94%;
 
+  tr, .ivu-table-row {
+    display: table-row;
+  }
+
   .ivu-table-cell-tree {
     margin-right: 4px;
   }
