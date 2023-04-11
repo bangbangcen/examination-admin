@@ -30,7 +30,7 @@ const formState = reactive({
   name: "",
   phone: "",
   password: "",
-  roleId: -1,
+  newRoleId: -1,
 });
 getAdmins(1);
 
@@ -91,7 +91,7 @@ async function addAdmin() {
   formState.name = "";
   formState.password = "";
   formState.phone = "";
-  formState.roleId = -1;
+  formState.newRoleId = -1;
   getAdmins(1);
 }
 </script>
@@ -108,8 +108,8 @@ async function addAdmin() {
       <FormItem label="密码" prop="password" required="true">
         <Input v-model="formState.password" placeholder="请输入用户密码"></Input>
       </FormItem>
-      <FormItem label="用户角色" prop="roleId" required="true">
-        <Select clearable style="width: 200px" v-model="formState.roleId">
+      <FormItem label="用户角色" prop="newRoleId" required="true">
+        <Select clearable style="width: 200px" v-model="formState.newRoleId">
           <Option v-for="(item, index) in state.roles" :value="item.id" :key="item.id"
             >{{ item.name }}
           </Option>

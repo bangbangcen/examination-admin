@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import $axios from "@/axios";
-import MyTable from '@/components/MyTable/MyTable.vue';
+import MyTable from "@/components/MyTable/MyTable.vue";
 import { ref, toRaw, reactive, watch } from "vue";
 import { cloneDeep } from "lodash";
 import { traverse } from "@/utils";
@@ -11,21 +11,21 @@ const columns = [
     title: "权限名称",
     key: "name",
     flex: 2,
-    editable: true
+    editable: true,
   },
   {
     title: "路由名称",
     key: "path",
-    flex: 2
+    flex: 2,
   },
   {
     title: "权限等级",
     key: "level",
-    flex: 2
+    flex: 2,
   },
 ];
 let state = reactive({
-  data: []
+  data: [],
 });
 let res = await $axios.get("permission/list");
 state.data = reactive(res.data.children);
@@ -33,16 +33,13 @@ let isEdit = ref(false);
 const table = ref();
 console.log(table);
 
-watch(
-  isEdit,
-  (newValue) => {
-    if (!newValue) {
-      state.data = reactive(res.data.children);
-    } else {
-      state.data = reactive(cloneDeep(res.data.children));
-    }
-  },
-);
+watch(isEdit, (newValue) => {
+  if (!newValue) {
+    state.data = reactive(res.data.children);
+  } else {
+    state.data = reactive(cloneDeep(res.data.children));
+  }
+});
 
 function edit() {
   isEdit.value = true;
@@ -58,8 +55,9 @@ function save() {
   traverse(updatedData, (node: any) => {
     delete node.arr;
     pmslist.push(node);
-  })
-  $axios.post("permission/update", toRaw(pmslist))
+  });
+  $axios
+    .post("permission/update", toRaw(pmslist))
     .then(async (res) => {
       proxy.$Message.success({ content: res.data.message });
       isEdit.value = false;
@@ -68,7 +66,7 @@ function save() {
       setTimeout(() => {
         table.value.setProps();
         table.value.setTableRowStyle();
-      })
+      });
     })
     .catch((res) => {
       proxy.$Message.error({ content: res });
@@ -92,7 +90,7 @@ function save() {
       </Button>
     </div>
     <MyTable
-      class="table"
+      class="myTable"
       :columns="columns"
       :data="state.data"
       :fit="true"
@@ -111,12 +109,16 @@ function save() {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .table-top {
   margin-bottom: 16px;
 
   button {
     margin-right: 20px;
   }
+}
+
+.myTable tr {
+  display: flex;
 }
 </style>

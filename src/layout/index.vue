@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import Logo from './components/logo/Logo.vue';
-import SideBar from './components/side-bar/index.vue';
-import NavigationBar from './components/navigation-bar/index.vue';
-import TopBar from './components/top-bar/index.vue';
+import Logo from "./components/logo/Logo.vue";
+import SideBar from "./components/side-bar/index.vue";
+import NavigationBar from "./components/navigation-bar/index.vue";
+import TopBar from "./components/top-bar/index.vue";
+
 </script>
 
 <template>
@@ -12,27 +13,27 @@ import TopBar from './components/top-bar/index.vue';
       <SideBar class="side-bar"></SideBar>
     </div>
     <div class="main-view">
-      <TopBar class="top-bar"></TopBar>
+      <TopBar class="top-bar">
+      </TopBar>
       <NavigationBar class="navigation-bar"></NavigationBar>
       <Suspense>
         <router-view class="router-view" v-slot="{ Component }">
           <keep-alive>
             <component :is="Component"></component>
-          </keep-alive>        
-        </router-view>              
+          </keep-alive>
+        </router-view>
       </Suspense>
     </div>
   </div>
-</template> 
+</template>
 
 <style lang="scss" scoped>
-@import '../assets/theme.scss';
+@import "../assets/theme.scss";
 .layout {
   display: flex;
   height: 100%;
 
   .left-part {
-    
     .logo {
       height: 80px;
     }
@@ -48,10 +49,9 @@ import TopBar from './components/top-bar/index.vue';
     .navigation-bar {
       height: 36px;
     }
-    .router-view {
-      padding: 20px;
-    }
+    // .router-view {
+    //   padding: 20px;
+    // }
   }
 }
-
 </style>

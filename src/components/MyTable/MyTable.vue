@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, computed, watch, ref } from "vue";
 import { cloneDeep } from "lodash";
-import {
-  allEl,
-  elChildren,
-  traverse,
-  flatTree,
-  swap,
-} from "../../utils/index.ts";
+import { allEl, elChildren, traverse, flatTree, swap } from "../../utils/index.ts";
 import type { Column, Row } from "./model";
 import MyTableRow from "@/components/MyTable/MyTableRow.vue";
 
@@ -95,7 +89,7 @@ function setTableRowDragProp() {
 
 // 为dom设置dragstart,dragenter
 function setDragProp(dom: any) {
-  dom.draggable = true;
+  // dom.draggable = true;
   dom.addEventListener("dragstart", (event: any) => {
     curArr = event.target.node.arr;
     preDraggedNode = event.target.node;
@@ -129,7 +123,7 @@ function swapTwoRows() {
 
 defineExpose({
   setTableRowStyle,
-  setProps
+  setProps,
 });
 </script>
 
@@ -152,10 +146,7 @@ defineExpose({
         :level="0"
         :slotColumns="slotColumns"
       >
-        <template
-          v-for="item in slotColumns"
-          v-slot:[item.slot]="{ row, index }"
-        >
+        <template v-for="item in slotColumns" v-slot:[item.slot]="{ row, index }">
           <slot :name="item.slot" v-bind="{ row, index }"></slot>
         </template>
       </MyTableRow>
@@ -163,7 +154,7 @@ defineExpose({
   </table>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../../assets/theme.scss";
 
 .fit {
