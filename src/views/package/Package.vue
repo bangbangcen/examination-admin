@@ -46,9 +46,9 @@ const state = reactive({
 });
 
 async function setcheck(cname:string) {
-   state.info.modal = true;
    state.info.name=cname;
    state.info.checkgroup = (await $axios.post("package/categories",state.info)).data;
+   state.info.modal = true;
 }
 </script>
 

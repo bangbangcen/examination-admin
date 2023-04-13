@@ -2,6 +2,7 @@
 import $axios from "@/axios";
 import { forEach } from "lodash";
 import { ref, reactive, getCurrentInstance, Suspense} from "vue";
+const { proxy } = getCurrentInstance() as any;
 
 //sql时间格式化
 function timeFormatter(value:any) {
@@ -26,6 +27,13 @@ const columns = [
   {
     title: "体检中心",
     key: "center_name",
+    filters: [
+      {
+          label: '上海第一体检中心',
+          value: '上海第一体检中心'
+      }
+    ],
+    filterMethod (value:any, row:any) {return row.center_name==value;},
   },
   
   {
@@ -87,6 +95,10 @@ const columns = [
     ],
     filterMethod (value:any, row:any) {return row.status==value;}
   },
+  {
+    title: "增加检查",
+    slot: "operation",
+  }
 ];
 
 //页面参数类响应式变量
@@ -105,6 +117,10 @@ let res = await $axios.post("examination_order/list",page.params);
 const state = reactive({
   info: {
     data:res.data,
+    order_id:"",
+    name:"",
+    modal:false,
+    disabled:[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
   }
 });
 
@@ -119,6 +135,25 @@ async function change_data(){
     state.info.data=res.data;
   },300)
 }
+
+async function openModal(id:string) {
+  state.info.order_id=id;
+  state.info.disabled=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];
+  const res=(await $axios.post("examination_order/assignment",state.info)).data;
+  for(var i=0;i<res.length;++i){
+    state.info.disabled[res[i].id]=true;
+  }
+  state.info.name="";
+  state.info.modal = true;
+}
+
+async function addCategory() {
+  if(state.info.name==""){alert("选项为空");}
+  else{
+    await $axios.post("examination_order/addCategory",state.info);
+    await proxy.$Message.success({ content: "增检成功" });
+  }
+}
 </script>
 
 <template>
@@ -132,6 +167,35 @@ async function change_data(){
     :columns="columns"
     :data="state.info.data"
     >
+    <template #operation="{ row, index }">
+          <div class="operation">    
+            <!-- modal:  -->
+            <Button type="info" @click="openModal(row.id)">增加检查</Button>
+            <Modal
+                v-model="state.info.modal"
+                title="增加检查"
+                @on-ok="addCategory()"
+                @on-cancel="state.info.modal = false">
+                <b>选择需要增加的检查项目</b><br>
+                <RadioGroup v-model="state.info.name" vertical>
+                    <Radio label="一般检查" :disabled='state.info.disabled[1]'>一般检查</Radio>
+                    <Radio label="内科检查" :disabled='state.info.disabled[2]'>内科检查</Radio>
+                    <Radio label="外科检查" :disabled='state.info.disabled[3]'>外科检查</Radio>
+                    <Radio label="心电图" :disabled='state.info.disabled[4]'>心电图</Radio>
+                    <Radio label="耳鼻喉检查" :disabled='state.info.disabled[5]'>耳鼻喉检查</Radio>
+                    <Radio label="肝胆脾胰彩超" :disabled='state.info.disabled[6]'>肝胆脾胰彩超</Radio>
+                    <Radio label="眼科检查" :disabled='state.info.disabled[7]'>眼科检查</Radio>
+                    <Radio label="甲状腺超声" :disabled='state.info.disabled[8]'>甲状腺超声</Radio>
+                    <Radio label="血常规" :disabled='state.info.disabled[9]'>血常规</Radio>
+                    <Radio label="尿常规" :disabled='state.info.disabled[10]'>尿常规</Radio>
+                    <Radio label="肾功能" :disabled='state.info.disabled[11]'>肾功能</Radio>
+                    <Radio label="糖化血红蛋白" :disabled='state.info.disabled[12]'>糖化血红蛋白</Radio>
+                    <Radio label="空腹血糖" :disabled='state.info.disabled[13]'>空腹血糖</Radio>
+                    <Radio label="肿瘤12项" :disabled='state.info.disabled[14]'>肿瘤12项</Radio>
+                </RadioGroup>
+            </Modal>
+          </div>
+      </template>
   </Table>
 </template>
 
