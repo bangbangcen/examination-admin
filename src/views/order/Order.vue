@@ -148,6 +148,7 @@ async function change_data(){
   },300)
 }
 
+//打开模态框1
 async function openModal(id:string,status:number) {
   if(status==0){
     alert("该用户未开始体检");
@@ -164,6 +165,7 @@ async function openModal(id:string,status:number) {
   }
 }
 
+//打开模态框2
 async function openModal2(id:string,status:number) {
   if(status==0){page.params.statusDisabled=false;}
   state.info.order_id=id;
@@ -171,7 +173,8 @@ async function openModal2(id:string,status:number) {
   page.params.modal2 = true;
 }
 
-async function addCategory() {
+//按订单号添加子项目名
+async function addAssignment() {
   if(state.info.name==""){alert("选项为空");}
   else{
     await $axios.post("examination_order/addAssignment",state.info);
@@ -179,6 +182,7 @@ async function addCategory() {
   }
 }
 
+//改变体检订单状态
 async function changeStatus() {
   if(state.info.order_status==-1){alert("选项为空");}
   else{
@@ -194,10 +198,11 @@ async function changeStatus() {
 </script>
 
 <template>
-  <!-- 搜索框 -->
   <!-- <Space direction="vertical" size="large" type="flex">
         <Input search enter-button v-model="page.params.dname" @on-change="change_data()" placeholder="输入体检人姓名或联系电话以搜索" />
   </Space> -->
+
+  <!-- 搜索框 -->
   <Input
     placeholder="请输入任何信息以搜索"
     class="search"
@@ -208,15 +213,19 @@ async function changeStatus() {
       <Icon type="ios-search" />
     </template>
   </Input>
+
   <!-- Order主表格 -->
   <Table
     class="table"
     :columns="columns"
     :data="state.info.data"
     >
+
+    <!-- 修改状态按钮 -->
     <template #operation1="{ row, index }">
           <div class="operation1"> 
             <Button type="info" @click="openModal2(row.id,row.status)">修改状态</Button>
+            <!-- modal2:  -->
             <Modal
                 v-model="page.params.modal2"
                 title="修改状态"
@@ -230,14 +239,16 @@ async function changeStatus() {
             </Modal>
           </div>
     </template>
+
+    <!-- 增加检查按钮 -->
     <template #operation="{ row, index }">
           <div class="operation">    
-            <!-- modal:  -->
+            <!-- modal1:  -->
             <Button type="info" @click="openModal(row.id,row.status)">增加检查</Button>
             <Modal
                 v-model="page.params.modal"
                 title="增加检查"
-                @on-ok="addCategory()"
+                @on-ok="addAssignment()"
                 @on-cancel="page.params.modal = false">
                 <b>选择需要增加的检查项目</b><br>
                 <RadioGroup v-model="state.info.name" vertical>
