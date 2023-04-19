@@ -133,6 +133,7 @@ const page = reactive({
 
 //初次获得数据
 let res = await $axios.post("examination_center/list",page.params);
+get_pagesize();
 
 //响应式变量state
 const state = reactive({

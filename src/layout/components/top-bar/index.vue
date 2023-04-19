@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { store } from "@/store";
 import router from "@/router";
+import $axios from "@/axios";
+import { forEach } from "lodash";
+import { ref, reactive, getCurrentInstance, Suspense} from "vue";
+
+const uname=localStorage.getItem('uname');
 
 function changeSideBarStatus() {
   store.sideBarIsOpen = !store.sideBarIsOpen;
@@ -15,6 +20,7 @@ function exit() {
 <template>
   <div class="flex">
     <Icon class="menu-btn" size="28" type="md-menu" @click="changeSideBarStatus()" />
+    <p>当前登录用户：{{ uname }}</p>
     <Button @click="exit()">登出</Button>
   </div>
 </template>

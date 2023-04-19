@@ -32,6 +32,8 @@ function login() {
       const data = res.data;
       if (data.login) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('uid', data.id);
+        localStorage.setItem('uname', info.username);
         proxy.$Message.success({ content: data.message });
         setTimeout(() => {
           router.push('/role');

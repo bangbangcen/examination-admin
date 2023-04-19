@@ -31,6 +31,7 @@ function closeTag(index: number, isSelected: boolean) {
       </div>
     </router-link>  
   </div>
+  <br>
 </template>
 
 <style lang="scss" scoped>
