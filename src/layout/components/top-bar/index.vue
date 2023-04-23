@@ -20,7 +20,7 @@ function exit() {
 <template>
   <div class="flex">
     <Icon class="menu-btn" size="28" type="md-menu" @click="changeSideBarStatus()" />
-    <p>当前登录用户：{{ uname }}</p>
+    <b style="font-size: 20px;color:blue;">当前登录用户：{{ uname }}</b>
     <Button @click="exit()">登出</Button>
   </div>
 </template>
