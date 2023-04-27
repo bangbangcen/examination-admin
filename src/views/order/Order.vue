@@ -76,7 +76,7 @@ const columns = [
       switch (params.row.status){
         case 0:return '未体检';break;
         case 1:return '体检中';break;
-        case 2:return '增检中';break;
+        case 2:return '暂停中';break;
         case 3:return '已完成';break;
       }
     },
@@ -90,7 +90,7 @@ const columns = [
           value: '1'
       },
       {
-          label: '增检中',
+          label: '暂停中',
           value: '2'
       },
       {
@@ -177,21 +177,23 @@ async function openModal2(id:string,status:number) {
 async function addAssignment() {
   if(state.info.name==""){alert("选项为空");}
   else{
+    await $axios.post("queue/delete",{order_id:state.info.order_id,department_id:-1});
     await $axios.post("examination_order/addAssignment",state.info);
     await proxy.$Message.success({ content: "增检成功" });
   }
 }
 
 //改变体检订单状态
-async function changeStatus() {
+async function changeStatus(examinee_id:number) {
   if(state.info.order_status==-1){alert("选项为空");}
   else{
     await $axios.post("examination_order/changeStatus",state.info);
     await proxy.$Message.success({ content: "更改成功" });
     res = await $axios.post("examination_order/list",page.params);
     state.info.data=res.data;
-    if(state.info.order_status!=0){
+    if(state.info.order_status==1){
       await $axios.post("examination_order/newAssignment",state.info);
+      await $axios.post("assignment/intel",{examinee_id:examinee_id});
     }
   }
 }
@@ -229,11 +231,11 @@ async function changeStatus() {
             <Modal
                 v-model="page.params.modal2"
                 title="修改状态"
-                @on-ok="changeStatus()"
+                @on-ok="changeStatus(row.examinee_id)"
                 @on-cancel="page.params.modal2 = false">
                 <RadioGroup v-model="state.info.order_status" vertical>
                     <Radio label="1" :disabled='page.params.statusDisabled'>体检中</Radio>
-                    <Radio label="2" >增检中</Radio>
+                    <Radio label="2" >暂停中</Radio>
                     <Radio label="3" >已完成</Radio>
                 </RadioGroup>
             </Modal>

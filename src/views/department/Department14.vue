@@ -175,6 +175,8 @@ async function next_examinee(){//&*&
   if(state.info.button9 && state.info.button11 && state.info.button12 && state.info.button13 && state.info.button14){
     await $axios.post("queue/delete",{order_id:examinee_info.order_id,department_id:department_id});
     await proxy.$Message.success({ content: "项目已全部完成！正在加载下一位......" });
+    await $axios.post("assignment/intel",{examinee_id:examinee_info.examinee_id});
+    location.reload();
   }
   else{
     await proxy.$Message.error({ content: "请完成所有项目后提交" });
