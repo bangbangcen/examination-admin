@@ -13,15 +13,19 @@ const state = reactive({
     data2:[{item_id:0,value_type:0,value:Math.random(),text:"请输入"}],//&*&,按category编号
     button2:true,
     text2:"无该项目",
-    div2:""
+    div2:"",
+    exist:false
   }
 });
 
 
 //获取该科室就诊人相关信息、控制按钮
-let examinee_info = (await $axios.post("queue/examinee_info",{department_id:department_id})).data[0]//&*&
-for(var i=0;i<examinee_info.category_id.length;++i){
-  if(examinee_info.category_id[i].category_id==2){state.info.button2=false;state.info.text2="提交";}
+let examinee_info = (await $axios.post("queue/examinee_info",{department_id:department_id})).data[0];//&*&
+if(examinee_info.name!="无"){
+  for(var i=0;i<examinee_info.category_id.length;++i){
+    if(examinee_info.category_id[i].category_id==4){state.info.button2=false;state.info.text2="提交";}
+  }
+  state.info.exist=true;
 }
 
 
@@ -74,7 +78,7 @@ async function next_examinee(){//&*&
 </script>
 
 <template>
-  <div>
+  <div v-if="state.info.exist">
     <b style="font-size: 20px;display: inline-block;margin-left: 2%;color:blue;">当前体检人：{{ examinee_info.name }}</b>
     <Button class="button" type="warning" @click="next_examinee()" >结束当前体检</Button>
     <br><br>
@@ -107,6 +111,14 @@ async function next_examinee(){//&*&
 
 
   </div>
+
+  <div v-else>
+    <Row>
+      <Col span="24" class="span">
+        <h1 class="queue" style="display: inline-block;">暂无体检人</h1>
+      </Col>
+    </Row>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -121,5 +133,16 @@ async function next_examinee(){//&*&
 .button{
   font-size: 20px;
   float: right;
+}
+.queue{
+  font-size: 25px;
+  text-align:center;
+  color: red;
+  font-weight:bolder;
+  margin: auto;
+}
+.span{
+  text-align: center;
+  margin: auto;
 }
 </style>

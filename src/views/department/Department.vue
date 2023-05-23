@@ -2,6 +2,7 @@
 import $axios from "@/axios";
 import { forEach } from "lodash";
 import { ref, reactive, getCurrentInstance, Suspense} from "vue";
+
 const List1 =[
 {
     value: '呼吸内科',
@@ -134,9 +135,14 @@ async function change_data(){
   state.info.data=res.data;
   console.log(Number(res.data[0].is_busy));
 }
+
+async function test(){
+  await $axios.post("assignment/intel",{examinee_id:2});
+}
 </script>
 
 <template>
+  <Button type="primary" @click="test()">导检测试</Button>
   <Select v-model="page.params.dname" style="width:850px" @on-change="change_data()" placeholder="请选择科室">
         <OptionGroup label="内科学">
             <Option v-for="item in List1" :value="item.value" :key="item.value">{{ item.label }}</Option>
@@ -159,7 +165,7 @@ async function change_data(){
             <Radio label="其它科室"></Radio>
         </RadioGroup>
     </Space> -->
-  <!-- Center主表格 -->
+  <!-- Department主表格 -->
   <Table
     class="table"
     :columns="columns"

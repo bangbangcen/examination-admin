@@ -171,4 +171,15 @@ async function next_examinee(){//&*&
   font-size: 20px;
   float: right;
 }
+.queue{
+  font-size: 25px;
+  text-align:center;
+  color: red;
+  font-weight:bolder;
+  margin: auto;
+}
+.span{
+  text-align: center;
+  margin: auto;
+}
 </style>

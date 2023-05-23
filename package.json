@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^1.2.4",
+    "jsbarcode": "^3.11.5",
     "lodash": "^4.17.21",
     "node-sass": "^8.0.0",
     "sass-loader": "^13.2.0",

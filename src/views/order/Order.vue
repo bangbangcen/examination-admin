@@ -77,7 +77,9 @@ const columns = [
         case 0:return '未体检';break;
         case 1:return '体检中';break;
         case 2:return '暂停中';break;
-        case 3:return '已完成';break;
+        case 3:return '用餐中';break;
+        case 4:return '已完成';break;
+        case 5:return '已终止';break;
       }
     },
     filters: [
@@ -94,8 +96,16 @@ const columns = [
           value: '2'
       },
       {
-          label: '已完成',
+          label: '用餐中',
           value: '3'
+      },
+      {
+          label: '已完成',
+          value: '4'
+      },
+      {
+          label: '已终止',
+          value: '5'
       }
     ],
     filterMethod (value:any, row:any) {return row.status==value;}
@@ -177,7 +187,7 @@ async function openModal2(id:string,status:number) {
 async function addAssignment() {
   if(state.info.name==""){alert("选项为空");}
   else{
-    await $axios.post("queue/delete",{order_id:state.info.order_id,department_id:-1});
+    //await $axios.post("queue/delete",{order_id:state.info.order_id,department_id:-1});
     await $axios.post("examination_order/addAssignment",state.info);
     await proxy.$Message.success({ content: "增检成功" });
   }
@@ -236,7 +246,9 @@ async function changeStatus(examinee_id:number) {
                 <RadioGroup v-model="state.info.order_status" vertical>
                     <Radio label="1" :disabled='page.params.statusDisabled'>体检中</Radio>
                     <Radio label="2" >暂停中</Radio>
+                    <Radio label="3" >用餐中</Radio>
                     <Radio label="3" >已完成</Radio>
+                    <Radio label="3" >已终止</Radio>
                 </RadioGroup>
             </Modal>
           </div>

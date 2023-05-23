@@ -36,7 +36,7 @@ function login() {
         localStorage.setItem('uname', info.username);
         proxy.$Message.success({ content: data.message });
         setTimeout(() => {
-          router.push('/role');
+          router.push(data.path);
         }, 800);
       }
       else {
